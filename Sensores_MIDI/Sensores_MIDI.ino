@@ -9,6 +9,11 @@
 
 #define CANAIS 12 // numero de canais
 
+#define AMOSTRAGEM 20 //amostra para media
+
+int c = 0; //contador para amostragem
+
+
 
 //#include <Keyboard.h>
 
@@ -44,6 +49,32 @@ VL53L0X s12;
 
 int valores[CANAIS] = {0,0,0,0,0,0,0,0,0,0,0,0};
 
+int amostra[][CANAIS]=
+{ 
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0},
+
+              };
+
+int media [CANAIS] = {0,0,0,0,0,0,0,0,0,0,0,0};
 
 void setup()
 {
@@ -529,11 +560,32 @@ void loop()
         valores[i] = map(valores[i],0,2000,0,127);
         valores[i] = constrain(valores[i],0,127);
 
-        //Serial.print(valores[i]);
 
+        //fazendo média:
+
+        media[i] = media[i] - amostra[c][i]; // subtrai ciclo de amostra passado
+
+        amostra[c][i] = valores[i];//atualiza amostragem
+
+        media[i] = media[i] + amostra[c][i]; //soma na média com valor atualizado
+ 
+
+        //Serial.print(valores[i]);
+        /*
         noteOn(i, valores[i], 64);   // Channel 0, middle C, normal velocity
         MidiUSB.flush();
-        delay(20);
+        delay(10);
+        */
+        int temporario = media[i]/AMOSTRAGEM;
+        noteOn(i, temporario, 64);   // Channel 0, middle C, normal velocity
+        MidiUSB.flush();
+        delay(10);
+      }
+
+      c++; //avança no ciclo de amostragem
+
+      if(c>= AMOSTRAGEM){
+        c = 0;
       }
       //Serial.println();
 
